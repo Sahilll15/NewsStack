@@ -5,8 +5,8 @@ import propTypes from 'prop-types'
 export default class News extends Component {
 
     static defaultProps = {
-        country: 'us',
-        PageSize: 8,
+        country: 'in',
+        PageSize: 9,
         category: 'general',
     }
     static propTypes = {
@@ -18,25 +18,33 @@ export default class News extends Component {
     ]
 
     async updateNews() {
-        let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=9c4136563cb84f42becdbc8bfecc9ef2&page=${this.state.page}&pagesize=${this.props.PageSize}`
+        this.props.setProgess(10);
+        let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}  &page=${this.state.page}&pagesize=${this.props.PageSize}`
         let data = await fetch(url);
+        this.props.setProgess(30);
         let parsedData = await data.json();
+        this.props.setProgess(50);
 
-        this.setState({ articles: parsedData.articles, totalResults: parsedData.totalResults })
+        this.setState({ articles: parsedData.articles, totalResults: parsedData.totalResults, loading: false, })
+        this.props.setProgess(100);
     }
 
     async componentDidMount() {
         this.updateNews();
     }
+    capitalizeFirstLetter(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         console.log("sahil")
         this.state = {
             articles: this.articles,
             loading: false,
             page: 1
         }
+        document.title = `${this.capitalizeFirstLetter(this.props.category)} - NewsStack`;
 
     }
     handlenext = async () => {
@@ -53,7 +61,7 @@ export default class News extends Component {
     render() {
         return (
             <div className='container my-3'>
-                <h1 className="text-center">NewsStack-Top HeadLines</h1>
+                <h1 className="text-center">NewsStack-Top HeadLines on {this.capitalizeFirstLetter(this.props.category)} Category</h1>
 
 
                 <div className="row">
